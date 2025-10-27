@@ -94,8 +94,16 @@ class SudokuBoard:
             row_vals = " ".join(str(self.board[r][c]) for c in range(9))
             print(f"R{r}  {row_vals}")
 
-        print("\nDomainStore:")
+        print("\nDomain Store:")
         for r in range(9):
             print(f"\nRow R{r}:")
             for c in range(9):
-                print(f"  Cell (R{r},C{c}): {self.domainStore[r][c]}")
+                domain_vec = self.domainStore[r][c]
+                possible_vals = [str(i + 1) for i in range(9) if domain_vec[i] == 1]
+
+                possible_str = (
+                    "{" + ",".join(possible_vals) + "}"
+                    if possible_vals else "-"
+                )
+
+                print(f"  Cell (R{r},C{c}): {domain_vec}  ->  {possible_str}")
