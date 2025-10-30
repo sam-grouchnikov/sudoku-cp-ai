@@ -23,9 +23,6 @@ class SudokuDataset(Dataset):
         x = torch.tensor(features, dtype=torch.float32)
 
         target_idx = int(row[-1])
-        y = torch.zeros(9, 9, dtype=torch.float32)
-        row_idx = target_idx // 9
-        col_idx = target_idx % 9
-        y[row_idx, col_idx] = 1.0
+        y = torch.tensor(target_idx, dtype=torch.long)
 
         return x, y
