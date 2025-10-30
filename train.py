@@ -44,3 +44,5 @@ def __main__():
 
     trainer.test(model, dataloaders=test_loader)
 
+if __name__ == "__main__":
+    main()
