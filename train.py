@@ -21,7 +21,7 @@ def main():
 
     train_size = int(0.7 * len(dataset))
     val_size = int(0.1 * len(dataset))
-    test_size = int(0.2 * len(dataset))
+    test_size = len(dataset) - train_size-val_size
 
     train_dataset, val_dataset, test_dataset = random_split(dataset, [train_size, val_size, test_size])
 
