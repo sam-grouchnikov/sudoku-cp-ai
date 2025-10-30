@@ -4,7 +4,7 @@ import torch
 import numpy as np
 
 class SudokuDataset(Dataset):
-    def __init__(self, file, num_features = 46, use_one_hot_target = True):
+    def __init__(self, file, num_features = 1, use_one_hot_target = True):
         self.data = pd.read_csv(file)
         self.num_features = num_features
         self.use_one_hot_target = use_one_hot_target
