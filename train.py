@@ -37,7 +37,8 @@ def main():
         devices=devices,
         precision="16",
         strategy=DDPStrategy(),
-        val_check_interval=0.2
+        val_check_interval=0.2,
+        logger=wandb_logger,
     )
 
     trainer.fit(model, train_loader, val_loader)
