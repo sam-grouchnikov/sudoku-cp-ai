@@ -29,7 +29,7 @@ def __main__():
     val_loader = DataLoader(val_dataset, batch_size=batch, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=batch, shuffle=True)
 
-    model = SudokuLightning()
+    model = SudokuLightning(wandb_logger)
 
     trainer = pl.Trainer(
         max_epochs=epochs,
