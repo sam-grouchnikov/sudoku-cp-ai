@@ -24,6 +24,9 @@ class SudokuLightning(L.LightningModule):
         self.model = SudokuCNN()
         self.wandb_logger = logger
 
+    def forward(self, x):
+        return self.model(x)
+
     def training_step(self, batch, batch_idx):
         x, y = batch
         logits = self(x)
