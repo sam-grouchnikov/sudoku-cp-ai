@@ -20,14 +20,12 @@ def print_board(board_flat, highlight=None):
             print("-"*33)
 
 def human_label_sudoku_resume(raw_csv_path, labeled_csv_path, progress_path="progress.txt"):
-    # Load CSV
-    raw_df = pd.read_csv(raw_csv_path, nrows = 10000)  # use header=None for raw 81-char strings
+    raw_df = pd.read_csv(raw_csv_path, nrows = 10000)
     if raw_df.shape[1] > 1:
         raw_df = raw_df.drop(raw_df.columns[1], axis=1)
 
     labeled_rows = []
 
-    # Determine starting index
     start_idx = 0
     if os.path.exists(progress_path):
         try:
@@ -43,7 +41,6 @@ def human_label_sudoku_resume(raw_csv_path, labeled_csv_path, progress_path="pro
             print(f"Skipping row {idx}: not 81 characters")
             continue
 
-        # Convert to integers safely
         try:
             board_flat = [int(c) for c in board_str]
         except ValueError:
@@ -52,7 +49,6 @@ def human_label_sudoku_resume(raw_csv_path, labeled_csv_path, progress_path="pro
 
         print_board(board_flat)
 
-        # Ask for human input
         while True:
             user_input = input("Next cell to choose? Enter row,col (0-indexed): ")
             try:
@@ -67,16 +63,13 @@ def human_label_sudoku_resume(raw_csv_path, labeled_csv_path, progress_path="pro
         next_cell_index = r*9 + c
         labeled_rows.append(board_flat + [next_cell_index])
 
-        # Save labeled CSV after each entry
         labeled_df = pd.DataFrame(labeled_rows)
         labeled_df.to_csv(labeled_csv_path, index=False, header=False)
 
-        # Save progress
         with open(progress_path, "w") as f:
             f.write(str(idx + 1))
 
     print(f"Labeled dataset saved to {labeled_csv_path}")
     print("All boards processed!")
 
-# Example usage:
 human_label_sudoku_resume("sudoku.csv", "labeled_sudoku.csv")

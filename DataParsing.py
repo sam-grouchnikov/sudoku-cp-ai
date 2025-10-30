@@ -10,6 +10,4 @@ cp_board = np.ones((9, 9, 9), dtype=int)
 
 sboard = SudokuBoard("board.csv")
 
-sboard.propagateRows(0)
-
 sboard.print()
