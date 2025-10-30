@@ -43,5 +43,18 @@ class SudokuLightning(L.LightningModule):
         loss = F.binary_cross_entropy_with_logits(logits, y)
         self.log("val_loss", loss, prog_bar=True)
 
+    def test_step(self, batch, batch_idx):
+        x, y = batch
+        logits = self(x).view(x.size(0), -1)
+        y = y.view(x.size(0), -1)
+        loss = F.binary_cross_entropy_with_logits(logits, y)
+        self.log("test_loss", loss, prog_bar=True)
+
+        preds = torch.sigmoid(logits) > 0.5
+        correct = (preds == y).float().mean()
+        self.log("test_accuracy", correct, prog_bar=True)
+
+        return {"test_loss": loss, "test_accuracy": correct}
+
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=1e-3)
