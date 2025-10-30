@@ -8,7 +8,7 @@ from Dataset import SudokuDataset
 from model import SudokuLightning
 
 
-def __main__():
+def main():
     batch = 8
     epochs = 5
 
