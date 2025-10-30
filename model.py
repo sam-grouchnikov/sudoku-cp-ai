@@ -57,6 +57,8 @@ class SudokuLightning(L.LightningModule):
 
         preds = logits.argmax(dim=1)
         acc = (preds == y).float().mean()
+        for i in range(len(y)):
+            print(f"Sample {i + batch_idx * len(y)}: Actual={y[i].item()}, Predicted={preds[i].item()}")
 
         self.log("test_loss", loss, prog_bar=True)
         self.log("test_acc", acc, prog_bar=True)
