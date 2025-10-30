@@ -17,7 +17,7 @@ def main():
     wandb_logger = WandbLogger(project="sudoku-testing", name="rb-b-512")
 
 
-    dataset = SudokuDataset("\home\sam\sudoku\labeled_sudoku.csv")
+    dataset = SudokuDataset("/home/sam/sudoku/labeled_sudoku.csv")
 
     train_size = int(0.7 * len(dataset))
     val_size = int(0.1 * len(dataset))
