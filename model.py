@@ -6,7 +6,7 @@ import lightning as L
 class SudokuCNN(nn.Module):
     def __init__(self):
         super(SudokuCNN, self).__init__()
-        self.conv1 = nn.Conv2d(in_channels=46, out_channels=64, kernel_size=3, padding=1)
+        self.conv1 = nn.Conv2d(in_channels=1, out_channels=64, kernel_size=3, padding=1)
         self.conv2 = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, padding=1)
 
         self.conv_out = nn.Conv2d(in_channels=64, out_channels=1, kernel_size=1)
