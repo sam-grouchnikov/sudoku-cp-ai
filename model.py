@@ -30,9 +30,8 @@ class SudokuLightning(L.LightningModule):
     def training_step(self, batch, batch_idx):
         x, y = batch
         logits = self(x)
-
-        logits = logits.view(logits.size(0), -1)
-
+        logits = logits.view(x.size(0), -1)
+        y = y.view(x.size(0), -1)
         loss = F.binary_cross_entropy_with_logits(logits, y)
         self.log("train_loss", loss, prog_bar=True)
         return loss
@@ -40,6 +39,7 @@ class SudokuLightning(L.LightningModule):
     def validation_step(self, batch, batch_idx):
         x, y = batch
         logits = self(x).view(x.size(0), -1)
+        y = y.view(x.size(0), -1)
         loss = F.binary_cross_entropy_with_logits(logits, y)
         self.log("val_loss", loss, prog_bar=True)
 
