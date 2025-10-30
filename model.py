@@ -33,14 +33,14 @@ class SudokuLightning(L.LightningModule):
 
         logits = logits.view(logits.size(0), -1)
 
-        loss = F.cross_entropy(logits, y)
+        loss = F.binary_cross_entropy_with_logits(logits, y)
         self.log("train_loss", loss, prog_bar=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
         x, y = batch
         logits = self(x).view(x.size(0), -1)
-        loss = F.cross_entropy(logits, y)
+        loss = F.binary_cross_entropy_with_logits(logits, y)
         self.log("val_loss", loss, prog_bar=True)
 
     def configure_optimizers(self):
