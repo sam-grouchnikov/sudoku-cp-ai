@@ -46,11 +46,14 @@ def main():
         logger=wandb_logger,
     )
 
-    trainer.save_checkpoint("home/sam/sudoku/row_ckpt.ckpt")
 
     trainer.fit(model, train_loader, val_loader)
 
+
+
     trainer.test(model, dataloaders=test_loader)
+    trainer.save_checkpoint("home/sam/sudoku/row_ckpt.ckpt")
+
 
 if __name__ == "__main__":
     main()
