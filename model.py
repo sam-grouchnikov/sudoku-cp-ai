@@ -57,15 +57,7 @@ class SudokuLightning(L.LightningModule):
 
         preds = logits.argmax(dim=1)
         acc = (preds == y).float().mean()
-        for i in range(len(y)):
-            input_grid = x[i, 0].cpu().numpy()  # get 9x9 grid from input
-            actual_idx = y[i].argmax().item()
-            pred_idx = preds[i].item()
-            print(f"Sample {i + batch_idx * len(y)}:")
-            print("Input Grid:")
-            print(input_grid)
-            print(f"Actual Cell Index: {actual_idx}, Predicted Cell Index: {pred_idx}")
-            print("-" * 30)
+
 
         self.log("test_loss", loss, prog_bar=True)
         self.log("test_acc", acc, prog_bar=True)
