@@ -20,11 +20,9 @@ def print_board(board_flat, highlight=None):
             print("-"*33)
 
 def human_label_sudoku_resume(raw_csv_path, labeled_csv_path, progress_path="progress.txt"):
-    raw_df = pd.read_csv(raw_csv_path, nrows = 10000)
+    raw_df = pd.read_csv(raw_csv_path, nrows=10000)
     if raw_df.shape[1] > 1:
         raw_df = raw_df.drop(raw_df.columns[1], axis=1)
-
-    labeled_rows = []
 
     start_idx = 0
     if os.path.exists(progress_path):
@@ -61,15 +59,17 @@ def human_label_sudoku_resume(raw_csv_path, labeled_csv_path, progress_path="pro
                 print("Invalid input. Format: row,col")
 
         next_cell_index = r*9 + c
-        labeled_rows.append(board_flat + [next_cell_index])
 
-        labeled_df = pd.DataFrame(labeled_rows)
-        labeled_df.to_csv(labeled_csv_path, index=False, header=False)
+        # append row to CSV
+        pd.DataFrame([board_flat + [next_cell_index]]).to_csv(
+            labeled_csv_path, mode="a", index=False, header=False
+        )
 
+        # update progress
         with open(progress_path, "w") as f:
             f.write(str(idx + 1))
 
     print(f"Labeled dataset saved to {labeled_csv_path}")
     print("All boards processed!")
 
-human_label_sudoku_resume("sudoku.csv", "labeled_sudoku.csv")
+human_label_sudoku_resume("../sudoku.csv", "labeled_sudoku.csv")

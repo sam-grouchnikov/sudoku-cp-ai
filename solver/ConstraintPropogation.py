@@ -9,6 +9,11 @@ class SudokuBoard:
         self.domainStore = [[[1 for _ in range(9)] for _ in range(9)] for _ in range(9)]
         self.initializeDomains()
 
+    def propagate(self):
+        for i in range(9):
+            self.propagateRows(i)
+            self.propagateCols(i)
+            self.propagateGrids(i)
 
     def propagateRows(self, rowIdx):
         filledVals = []
@@ -61,6 +66,10 @@ class SudokuBoard:
                 for i in range(9):
                     if (i + 1) in filledVals:
                         self.domainStore[rowIdx][colIdx][i] = 0
+
+    # def extractFeatures(self):
+    #     # Per cell: domain store + 0/1 for empty/filled
+        
 
     # Propogate based on 3x3 grids
     def propagateGrids(self, gridIdx):
