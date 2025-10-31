@@ -1,3 +1,3 @@
-# AI-Guided Constraint Programming Sudoku Solvers
+# AI-Guided Constraint Programming Sudoku Solver
 
 In progress :)
