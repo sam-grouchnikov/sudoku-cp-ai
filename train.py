@@ -52,7 +52,7 @@ def main():
 
 
     trainer.test(model, dataloaders=test_loader)
-    trainer.save_checkpoint("home/sam/sudoku/row_ckpt.ckpt")
+    trainer.save_checkpoint("row_ckpt.ckpt")
 
 
 if __name__ == "__main__":
