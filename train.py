@@ -10,14 +10,14 @@ from model import SudokuLightning
 
 def main():
     batch = 8
-    epochs = 100
+    epochs = 10
 
     devices = torch.cuda.device_count()
     pl.seed_everything(42)
-    wandb_logger = WandbLogger(project="sudoku-testing", name="rb-b-512")
+    wandb_logger = WandbLogger(project="sudoku-testing", name="row_data")
 
 
-    dataset = SudokuDataset("/home/sam/sudoku/labeled_sudoku.csv")
+    dataset = SudokuDataset("/home/sam/sudoku/row_data.csv")
 
     train_size = int(0.7 * len(dataset))
     val_size = int(0.1 * len(dataset))
