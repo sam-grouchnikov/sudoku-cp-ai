@@ -3,6 +3,8 @@ import lightning as pl
 from torch.utils.data import DataLoader, random_split
 import torch
 from lightning.pytorch.loggers import WandbLogger
+from lightning.pytorch.callbacks import ModelCheckpoint, EarlyStopping
+
 
 from Dataset import SudokuDataset
 from model import SudokuLightning
@@ -31,6 +33,8 @@ def main():
 
     model = SudokuLightning(wandb_logger)
 
+
+
     trainer = pl.Trainer(
         max_epochs=epochs,
         accelerator="gpu",
@@ -41,6 +45,8 @@ def main():
         log_every_n_steps=1,
         logger=wandb_logger,
     )
+
+    trainer.save_checkpoint("home/sam/sudoku/row_ckpt.ckpt")
 
     trainer.fit(model, train_loader, val_loader)
 
