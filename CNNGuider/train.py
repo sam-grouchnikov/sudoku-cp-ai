@@ -6,8 +6,8 @@ from lightning.pytorch.loggers import WandbLogger
 from lightning.pytorch.callbacks import ModelCheckpoint, EarlyStopping
 
 
-from Dataset import SudokuDataset
-from model import SudokuLightning
+from CNNGuider.Dataset import SudokuDataset
+from CNNGuider.model import SudokuLightning
 
 
 def main():

@@ -220,7 +220,7 @@ class SudokuBoard:
 
         nr, nc = self.predict(board)
 
-        # nr, nc = find_first_empty(board)
+        nr, nc = find_first_empty(board)
 
 
         if board[nr][nc] != 0:
