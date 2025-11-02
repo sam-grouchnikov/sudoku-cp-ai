@@ -2,14 +2,16 @@ import pandas as pd
 import numpy as np
 import torch
 import copy
-
+import matplotlib.pyplot as plt
 from sympy.polys import domains
+
 
 from CNNGuider.model import SudokuLightning
 
 
 def get_possible_vals_from_domain(domain_vec):
     return [i + 1 for i, v in enumerate(domain_vec) if v == 1]
+
 
 
 def find_first_empty(board):
@@ -19,11 +21,39 @@ def find_first_empty(board):
                 return [r, c]
     return None
 
+def isSolved(board):
+    # Check rows
+    for r in range(9):
+        row_vals = [x for x in board[r] if x != 0]
+        if len(row_vals) != len(set(row_vals)):
+            return False
+
+    # Check columns
+    for c in range(9):
+        col_vals = [board[r][c] for r in range(9) if board[r][c] != 0]
+        if len(col_vals) != len(set(col_vals)):
+            return False
+
+    # Check 3x3 grids
+    for gr in range(3):
+        for gc in range(3):
+            sr, sc = gr * 3, gc * 3
+            grid_vals = []
+            for r in range(sr, sr + 3):
+                for c in range(sc, sc + 3):
+                    if board[r][c] != 0:
+                        grid_vals.append(board[r][c])
+            if len(grid_vals) != len(set(grid_vals)):
+                return False
+
+    return True
+
+
 
 class SudokuBoard:
     def __init__(self, path):
         self.path = path
-        self.boardDF = pd.read_csv(path)
+        self.boardDF = pd.read_csv(path, header=None)
         self.board = self.boardDF.fillna(0).astype(int).values.tolist()
         self.domainStore = [[[1 for _ in range(9)] for _ in range(9)] for _ in range(9)]
         self.initializeDomains()
@@ -121,8 +151,9 @@ class SudokuBoard:
         queue = [(r, c)]
 
         while queue:
-            cr, cc = queue.pop
-            assigned_vec = domains[cr][cc]
+            items = queue.pop()
+            cr, cc = items[0], items[1]
+            assigned_vec = domainStore[cr][cc]
             try:
                 assigned_val = assigned_vec.index(1) + 1
             except ValueError:
@@ -139,8 +170,8 @@ class SudokuBoard:
                         new_val = domainStore[cr][col].index(1) + 1
                         board[cr][col] = new_val
                         queue.append((cr, col))
+                        pass
 
-                # Column propagation
             for row in range(9):
                 if row == cr:
                     continue
@@ -152,8 +183,8 @@ class SudokuBoard:
                         new_val = domainStore[row][cc].index(1) + 1
                         board[row][cc] = new_val
                         queue.append((row, cc))
+                        pass
 
-                # Grid propagation
             startRow = (cr // 3) * 3
             startCol = (cc // 3) * 3
             for rr in range(startRow, startRow + 3):
@@ -168,22 +199,29 @@ class SudokuBoard:
                             new_val = domainStore[rr][cc2].index(1) + 1
                             board[rr][cc2] = new_val
                             queue.append((rr, cc2))
+                            pass
 
         return board, domainStore
 
-    def search(self, board=None, domainStore=None):
+    def search(self, board=None, domainStore=None, branch_sizes=None, depth=0, parent=None):
+        if branch_sizes is None:
+            branch_sizes = []
         if board is None:
             board = copy.deepcopy(self.board)
         if domainStore is None:
             domainStore = copy.deepcopy(self.domainStore)
 
         if all(all(val != 0 for val in row) for row in board):
-            return board
+            if isSolved(board):
+                branch_sizes.append((depth, 0))
+                return board, branch_sizes
+            else:
+                return None, branch_sizes
 
-        try:
-            nr, nc = self.predict(board)
-        except:
-            nr, nc = find_first_empty(board)
+        nr, nc = self.predict(board)
+
+        # nr, nc = find_first_empty(board)
+
 
         if board[nr][nc] != 0:
             nr, nc = find_first_empty(board)
@@ -191,16 +229,40 @@ class SudokuBoard:
         cell_domain = domainStore[nr][nc]
         possible_values = get_possible_vals_from_domain(cell_domain)
 
+        branch_sizes.append((depth, len(possible_values)))
+
         for val in possible_values:
+            node_label = f"({nr},{nc})={val}"
+
             new_board, new_domain = self.apply_assignment_and_propagate(board, domainStore, nr, nc, val)
             if new_board is None:
                 continue
 
-            result = self.search(new_board, new_domain)
+            result, branch_sizes = self.search(new_board, new_domain, branch_sizes, depth + 1, node_label)
             if result is not None:
-                return result
+                return result, branch_sizes
 
-        return None
+        return None, branch_sizes
+
+    def is_valid_assignment(self, board, r, c, val):
+        # Row check
+        if val in board[r]:
+            return False
+
+        # Column check
+        for i in range(9):
+            if board[i][c] == val:
+                return False
+
+        # 3x3 grid check
+        start_row = (r // 3) * 3
+        start_col = (c // 3) * 3
+        for i in range(start_row, start_row + 3):
+            for j in range(start_col, start_col + 3):
+                if board[i][j] == val:
+                    return False
+
+        return True
 
     def print(self):
         print("Board:")
@@ -208,12 +270,3 @@ class SudokuBoard:
         for r in range(9):
             row_vals = " ".join(str(self.board[r][c]) for c in range(9))
             print(f"R{r}  {row_vals}")
-
-        print("\nDomain Store:")
-        for r in range(9):
-            print(f"\nRow R{r}:")
-            for c in range(9):
-                domain_vec = self.domainStore[r][c]
-                possible_vals = [str(i + 1) for i in range(9) if domain_vec[i] == 1]
-                possible_str = "{" + ",".join(possible_vals) + "}" if possible_vals else "-"
-                print(f"  Cell (R{r},C{c}): {domain_vec}  ->  {possible_str}")
