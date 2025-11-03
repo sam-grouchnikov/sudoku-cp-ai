@@ -45,29 +45,6 @@ print("Hybrid done")
 times_naive = [0 for _ in range(81)]
 branches_naive = [0 for _ in range(81)]
 
-for index, boardSet in enumerate(board_sorted):
-    if len(boardSet) == 0:
-        continue
-    total_solver_timed = 0
-    total_solver_branches = 0
-    for board in boardSet:
-        sdb = SudokuBoard(board)
-        start = time.time()
-        sol, branches = sdb.search("hybrid")
-        end = time.time()
-        total_time = end - start
-        total_solver_timed += total_time
-        total_solver_branches += sdb.callCount()
-
-    print("Finished index ", index)
-    times_naive[index] = total_solver_timed / len(boardSet)
-    branches_naive[index] = total_solver_branches / len(boardSet)
-
-print("Naive done")
-
-times_cnn = [0 for _ in range(81)]
-branches_cnn = [0 for _ in range(81)]
-
 # for index, boardSet in enumerate(board_sorted):
 #     if len(boardSet) == 0:
 #         continue
@@ -76,19 +53,49 @@ branches_cnn = [0 for _ in range(81)]
 #     for board in boardSet:
 #         sdb = SudokuBoard(board)
 #         start = time.time()
-#         sol, branches = sdb.search("cnn")
+#         sol, branches = sdb.search("naive")
 #         end = time.time()
 #         total_time = end - start
 #         total_solver_timed += total_time
 #         total_solver_branches += sdb.callCount()
 #
 #     print("Finished index ", index)
-#     times_cnn[index] = total_solver_timed / len(boardSet)
-#     branches_cnn[index] = total_solver_branches / len(boardSet)
-#
-# print("CNN done")
+#     times_naive[index] = total_solver_timed / len(boardSet)
+#     branches_naive[index] = total_solver_branches / len(boardSet)
+
+print("Naive done")
+
+times_cnn = [0 for _ in range(81)]
+branches_cnn = [0 for _ in range(81)]
+
+for index, boardSet in enumerate(board_sorted):
+    if len(boardSet) == 0:
+        continue
+    total_solver_timed = 0
+    total_solver_branches = 0
+    for board in boardSet:
+        sdb = SudokuBoard(board)
+        start = time.time()
+        sol, branches = sdb.search("cnn")
+        end = time.time()
+        total_time = end - start
+        total_solver_timed += total_time
+        total_solver_branches += sdb.callCount()
+
+    print("Finished index ", index)
+    times_cnn[index] = total_solver_timed / len(boardSet)
+    branches_cnn[index] = total_solver_branches / len(boardSet)
+
+print("CNN done")
 
 
+print("CNN:", times_cnn)
+print("Hybrid:", times_hybrid)
+print("Naive:", times_naive)
+
+print("CNN:", branches_cnn)
+print("Hybrid:", branches_hybrid)
+print("Naive:", branches_naive)
 
 x_indices = np.arange(len(times_cnn))
 
@@ -97,11 +104,10 @@ plt.figure(figsize=(12, 8))
 # plt.plot(x_indices, times_cnn, color="blue", label="cnn")
 # plt.plot(x_indices, times_hybrid, color='red', label="hybrid")
 # plt.plot(x_indices, times_naive, color='green', label="naive")
-# plt.plot(x_indices, times_cnn, color='blue', label="cnn")
 
 plt.plot(x_indices, branches_cnn, color = "red", label = "cnn")
 plt.plot(x_indices, branches_hybrid, color = "blue", label = "hybrid")
-plt.plot(x_indices, branches_naive, color = "green", label = "naive")
+# plt.plot(x_indices, branches_naive, color = "green", label = "naive")
 plt.legend()
 plt.xlabel("Index")
 plt.ylabel("Time")

@@ -38,21 +38,21 @@ total = end - start
 print("CNN Time: ", total)
 print(sb.callCount())
 
-sb_hybrid = SudokuBoard(board)
-start = time.time()
-sb_hybrid.search("hybrid")
-end = time.time()
-total = end - start
-print("Hybrid Time: ", total)
-print(sb_hybrid.callCount())
-
-sb_naive = SudokuBoard(board)
-start = time.time()
-sb_naive.search("naive")
-end = time.time()
-total = end - start
-print("Naive Time: ", total)
-print(sb_naive.callCount())
+# sb_hybrid = SudokuBoard(board)
+# start = time.time()
+# sb_hybrid.search("hybrid")
+# end = time.time()
+# total = end - start
+# print("Hybrid Time: ", total)
+# print(sb_hybrid.callCount())
+#
+# sb_naive = SudokuBoard(board)
+# start = time.time()
+# sb_naive.search("naive")
+# end = time.time()
+# total = end - start
+# print("Naive Time: ", total)
+# print(sb_naive.callCount())
 
 # if solution:
 #     print("\nSolved Board:")

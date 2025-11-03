@@ -1,22 +1,21 @@
-import pandas as pd
 import numpy as np
 import torch
 import copy
-import matplotlib.pyplot as plt
-from sympy.polys import domains
+import random
 
 
 from CNNGuider.model import SudokuLightning
+from PreprocessData import preprocess
+
 
 def get_possible_vals_from_domain(domain_vec):
     return [i + 1 for i, v in enumerate(domain_vec) if v == 1]
 
 def naive_search(board, domainStore):
-    for r in range(9):
-        for c in range(9):
-            if board[r][c] == 0:
-                return [r, c]
-    return None
+    empty_cells = [(r, c) for r in range(9) for c in range(9) if board[r][c] == 0]
+    if not empty_cells:
+        return None
+    return random.choice(empty_cells)
 
 def hybrid_mrv(board, domainStore):
     """
@@ -27,7 +26,6 @@ def hybrid_mrv(board, domainStore):
     min_domain_size = 10
     candidates = []
 
-    # Step 1: Find all empty cells and track those with the smallest domain size
     for r in range(9):
         for c in range(9):
             if board[r][c] == 0:
@@ -38,19 +36,24 @@ def hybrid_mrv(board, domainStore):
                 elif domain_size == min_domain_size:
                     candidates.append((r, c))
 
-    # If no empty cells, board is filled
     if not candidates:
         return None
 
-    # Step 2: If tie, apply degree heuristic — pick cell with most constraints
     best_cell = None
     max_degree = -1
     for (r, c) in candidates:
-        row_empty = sum(board[r][cc] == 0 for cc in range(9)) - 1
-        col_empty = sum(board[rr][c] == 0 for rr in range(9)) - 1
-        sr, sc = (r // 3) * 3, (c // 3) * 3
-        grid_empty = np.sum(np.array(board)[sr:sr+3, sc:sc+3] == 0) - 1
-        degree = row_empty + col_empty + grid_empty
+        degree = 0
+
+        degree += sum(1 for cc in range(9) if board[r][cc] == 0 and cc != c)
+        degree += sum(1 for rr in range(9) if board[rr][c] == 0 and rr != r)
+        sr, sc = 3 * (r // 3), 3 * (c // 3)
+        degree += sum(
+            1
+            for rr in range(sr, sr + 3)
+            for cc in range(sc, sc + 3)
+            if board[rr][cc] == 0 and (rr, cc) != (r, c)
+        )
+
         if degree > max_degree:
             max_degree = degree
             best_cell = (r, c)
@@ -96,20 +99,21 @@ class SudokuBoard:
         self.initializeDomains()
         self.recursiveCalls = 0
 
-        # ckpt_path = "C:\\Users\\samgr\\PycharmProjects\\sudoku-cp-ai\\solver\\row_ckpt.ckpt"
-        ckpt_path = "/home/sam/sudoku/sudoku-cp-ai/row_ckpt.ckpt"
-        # self.model = SudokuLightning.load_from_checkpoint(ckpt_path).to(self.device)
+        ckpt_path = "C:\\Users\\samgr\\PycharmProjects\\sudoku-cp-ai\\solver\\row_ckpt.ckpt"
+        # ckpt_path = "/home/sam/sudoku/sudoku-cp-ai/row_ckpt.ckpt"
+        self.model = SudokuLightning.load_from_checkpoint(ckpt_path).to(self.device)
 
-    # def predict(self, board):
-    #     self.model.eval()
-    #     board_array = torch.tensor(board, dtype=torch.float32, device = self.device).view(1, 1, 9, 9)
-    #
-    #     with torch.no_grad():
-    #         logits = self.model(board_array)
-    #         preds = logits.view(-1).argmax()
-    #
-    #     row, col = divmod(preds.item(), 9)
-    #     return [row, col]
+    def predict(self, board, ds):
+        self.model.eval()
+        features_array = preprocess(board, ds)
+        features_array = features_array.unsqueeze(0)
+
+        with torch.no_grad():
+            logits = self.model(features_array)
+            preds = logits.view(-1).argmax()
+
+        row, col = divmod(preds.item(), 9)
+        return [row, col]
 
     def getValue(self, r, c):
         return self.board[r][c]
@@ -118,6 +122,10 @@ class SudokuBoard:
         return self.board
 
     def initializeDomains(self):
+        # Start with all 1s
+        self.domainStore = [[[1 for _ in range(9)] for _ in range(9)] for _ in range(9)]
+
+        # Assign values for pre-filled cells
         for r in range(9):
             for c in range(9):
                 val = self.board[r][c]
@@ -125,9 +133,32 @@ class SudokuBoard:
                     for d in range(9):
                         self.domainStore[r][c][d] = 0
                     self.domainStore[r][c][val - 1] = 1
-            self.propagateRows(r)
-            self.propagateCols(r)
-            self.propagateGrids(r)
+
+        # Fully propagate constraints iteratively until stable
+        changed = True
+        while changed:
+            changed = False
+            for r in range(9):
+                for c in range(9):
+                    if self.board[r][c] != 0:
+                        val = self.board[r][c]
+                        # Row
+                        for cc in range(9):
+                            if cc != c and self.domainStore[r][cc][val - 1] == 1:
+                                self.domainStore[r][cc][val - 1] = 0
+                                changed = True
+                        # Column
+                        for rr in range(9):
+                            if rr != r and self.domainStore[rr][c][val - 1] == 1:
+                                self.domainStore[rr][c][val - 1] = 0
+                                changed = True
+                        # Grid
+                        sr, sc = 3 * (r // 3), 3 * (c // 3)
+                        for rr in range(sr, sr + 3):
+                            for cc in range(sc, sc + 3):
+                                if (rr != r or cc != c) and self.domainStore[rr][cc][val - 1] == 1:
+                                    self.domainStore[rr][cc][val - 1] = 0
+                                    changed = True
 
     def getDomainStore(self):
         return self.domainStore
@@ -267,13 +298,11 @@ class SudokuBoard:
             else:
                 return None, branch_sizes
 
-        import time
 
         if method == "cnn":
-            # nr, nc = self.predict(board)
-            nr, nc = 0, 0
+            bs = "".join(str(cell) for row in board for cell in row)
+            nr, nc = self.predict(bs, domainStore)
         elif method == "hybrid":
-
             nr, nc = hybrid_mrv(board, domainStore)
         else:
             nr, nc = naive_search(board, domainStore)

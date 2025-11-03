@@ -3,7 +3,7 @@ import pandas as pd
 import torch
 import numpy as np
 
-from PreprocessData import preprocess
+from PreprocessData import preprocess, getDomainStore
 from solver.SudokuBoardSolver import SudokuBoard
 
 
@@ -19,8 +19,7 @@ class SudokuDataset(Dataset):
 
         board_str = row["board"]
         target_idx = int(row["label"])
-        sb = SudokuBoard(board_str)
-        domainStore = sb.getDomainStore()
+        domainStore = getDomainStore(board_str)
 
         x = preprocess(board_str, domainStore)
         y = torch.tensor(target_idx, dtype=torch.long)

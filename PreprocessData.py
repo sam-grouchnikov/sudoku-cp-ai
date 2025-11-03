@@ -1,9 +1,6 @@
 import numpy as np
 import torch
 
-from solver.SudokuBoardSolver import SudokuBoard
-
-
 def preprocess(board_str, domainStore=None):
     board = np.array(list(map(int, board_str)), dtype=np.float32).reshape(9, 9)
     features = np.zeros((21, 9, 9), dtype=np.float32)
@@ -28,8 +25,69 @@ def preprocess(board_str, domainStore=None):
 
     return torch.tensor(features, dtype=torch.float32)
 
+def getDomainStore(board_string: str):
+    """
+    Given a Sudoku board string of length 81 (0 = blank),
+    returns the 9x9x9 domainStore after constraint propagation.
+    Each domainStore[r][c][d] is 1 if digit (d+1) is still possible for cell (r,c).
+    """
+
+    # Convert to board (9x9 integers)
+    flat_array = np.array([int(ch) for ch in board_string])
+    board = flat_array.reshape(9, 9).tolist()
+
+    # Initialize all domains as fully open (1–9 possible)
+    domainStore = [[[1 for _ in range(9)] for _ in range(9)] for _ in range(9)]
+
+    def propagateRows(r):
+        filledVals = [board[r][c] for c in range(9) if board[r][c] != 0]
+        for c in range(9):
+            val = board[r][c]
+            if val != 0:
+                for i in range(9):
+                    domainStore[r][c][i] = 1 if i == val - 1 else 0
+            else:
+                for i in range(9):
+                    if (i + 1) in filledVals:
+                        domainStore[r][c][i] = 0
+
+    def propagateCols(c):
+        filledVals = [board[r][c] for r in range(9) if board[r][c] != 0]
+        for r in range(9):
+            val = board[r][c]
+            if val != 0:
+                for i in range(9):
+                    domainStore[r][c][i] = 1 if i == val - 1 else 0
+            else:
+                for i in range(9):
+                    if (i + 1) in filledVals:
+                        domainStore[r][c][i] = 0
+
+    def propagateGrids(g):
+        startRow, startCol = (g // 3) * 3, (g % 3) * 3
+        filledVals = [board[r][c]
+                      for r in range(startRow, startRow + 3)
+                      for c in range(startCol, startCol + 3)
+                      if board[r][c] != 0]
+        for r in range(startRow, startRow + 3):
+            for c in range(startCol, startCol + 3):
+                val = board[r][c]
+                if val != 0:
+                    for i in range(9):
+                        domainStore[r][c][i] = 1 if i == val - 1 else 0
+                else:
+                    for i in range(9):
+                        if (i + 1) in filledVals:
+                            domainStore[r][c][i] = 0
+
+    # Initialization propagation
+    for r in range(9):
+        propagateRows(r)
+        propagateCols(r)
+        propagateGrids(r)
+
+    return np.array(domainStore, dtype=np.uint8)
+
 board = "561092730020780090900005046600000427010070003073000819035900670700103080000000050"
-sb = SudokuBoard(board)
-domainStore = sb.getDomainStore()
-data_tensor = preprocess(board, domainStore)
-print(data_tensor)
+ds = getDomainStore(board)
+data_tensor = preprocess(board, ds)
