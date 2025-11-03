@@ -88,6 +88,7 @@ def isSolved(board):
 
 class SudokuBoard:
     def __init__(self, board_string):
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.board_string = board_string
         flat_array = np.array([int(char) for char in board_string])
         self.board = flat_array.reshape(9, 9).tolist()
@@ -97,7 +98,7 @@ class SudokuBoard:
 
         ckpt_path = "C:\\Users\\samgr\\PycharmProjects\\sudoku-cp-ai\\solver\\row_ckpt.ckpt"
         ckpt_path = "/home/sam/sudoku/sudoku-cp-ai/row_ckpt.ckpt"
-        self.model = SudokuLightning.load_from_checkpoint(ckpt_path)
+        self.model = SudokuLightning.load_from_checkpoint(ckpt_path).to(device)
 
     def predict(self, board):
         self.model.eval()
