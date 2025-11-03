@@ -26,11 +26,6 @@ def preprocess(board_str, domainStore=None):
     return torch.tensor(features, dtype=torch.float32)
 
 def getDomainStore(board_string: str):
-    """
-    Given a Sudoku board string of length 81 (0 = blank),
-    returns the 9x9x9 domainStore after constraint propagation.
-    Each domainStore[r][c][d] is 1 if digit (d+1) is still possible for cell (r,c).
-    """
 
     # Convert to board (9x9 integers)
     flat_array = np.array([int(ch) for ch in board_string])

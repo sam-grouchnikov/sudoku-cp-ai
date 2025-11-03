@@ -3,7 +3,7 @@ import numpy as np
 import csv
 # Read only first 100,000 rows and only the first column
 sudoku_file = "C:\\Users\\samgr\\PycharmProjects\\sudoku-cp-ai\\sudoku.csv"
-df = pd.read_csv(sudoku_file, nrows=1_000_000)
+df = pd.read_csv(sudoku_file, nrows=5_000_000)
 boards = df.iloc[:, 0].astype(str).tolist()
 
 print(f"Loaded {len(boards)} Sudoku boards.")
