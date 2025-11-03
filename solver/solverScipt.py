@@ -28,42 +28,62 @@ def isSolved(board):
 
     return True
 
-sb = SudokuBoard("board.csv")
-sb.print()
+board = "057200604428769053000514200284900760671025049005476820800390500792050430013040978"
+
+sb = SudokuBoard(board)
 start = time.time()
-solution, branch_sizes= sb.search()
+sb.search("cnn")
 end = time.time()
 total = end - start
-print("Time: ", total)
-if solution:
-    print("\nSolved Board:")
-    for row in solution:
-        print(row)
-else:
-    print("No solution found.")
+print("CNN Time: ", total)
+print(sb.callCount())
 
-print("Solver check: ", isSolved(solution))
+sb_hybrid = SudokuBoard(board)
+start = time.time()
+sb_hybrid.search("hybrid")
+end = time.time()
+total = end - start
+print("Hybrid Time: ", total)
+print(sb_hybrid.callCount())
 
-branch_dict = defaultdict(list)
-for depth, branches in branch_sizes:
-    branch_dict[depth].append(branches)
+sb_naive = SudokuBoard(board)
+start = time.time()
+sb_naive.search("naive")
+end = time.time()
+total = end - start
+print("Naive Time: ", total)
+print(sb_naive.callCount())
 
+# if solution:
+#     print("\nSolved Board:")
+#     for row in solution:
+#         print(row)
+# else:
+#     print("No solution found.")
+#
+# print("Solver check: ", isSolved(solution))
 
-depths = sorted(branch_dict.keys())
-avg_branches = [sum(branch_dict[d])/len(branch_dict[d]) for d in depths]
-max_branches = [max(branch_dict[d]) for d in depths]
-print(branch_dict)
-
-plt.figure(figsize=(10,6))
-plt.plot(depths, avg_branches, marker='o', label='Average Branches')
-plt.plot(depths, max_branches, marker='x', linestyle='--', label='Max Branches')
-plt.xlabel("Recursion Depth")
-plt.ylabel("Number of Branches at Node")
-plt.title("Sudoku Solver Recursion Branch Sizes (Aggregated)")
-plt.legend()
-plt.ylim(0, 4)
-plt.grid(True)
-plt.show()
+# branch_dict = defaultdict(list)
+# for depth, branches in branch_sizes:
+#     branch_dict[depth].append(branches)
+#
+#
+# depths = sorted(branch_dict.keys())
+# avg_branches = [sum(branch_dict[d])/len(branch_dict[d]) for d in depths]
+# max_branches = [max(branch_dict[d]) for d in depths]
+# print(branch_dict)
+#
+#
+# plt.figure(figsize=(10,6))
+# plt.plot(depths, avg_branches, marker='o', label='Average Branches')
+# plt.plot(depths, max_branches, marker='x', linestyle='--', label='Max Branches')
+# plt.xlabel("Recursion Depth")
+# plt.ylabel("Number of Branches at Node")
+# plt.title("Sudoku Solver Recursion Branch Sizes (Aggregated)")
+# plt.legend()
+# plt.ylim(0, 10)
+# plt.grid(True)
+# plt.show()
 
 
 

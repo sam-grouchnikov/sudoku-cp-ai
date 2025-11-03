@@ -8,18 +8,54 @@ from sympy.polys import domains
 
 from CNNGuider.model import SudokuLightning
 
-
 def get_possible_vals_from_domain(domain_vec):
     return [i + 1 for i, v in enumerate(domain_vec) if v == 1]
 
-
-
-def find_first_empty(board):
+def naive_search(board, domainStore):
     for r in range(9):
         for c in range(9):
             if board[r][c] == 0:
                 return [r, c]
     return None
+
+def hybrid_mrv(board, domainStore):
+    """
+    Hybrid MRV + Degree heuristic:
+    - MRV: choose the empty cell with the smallest remaining domain.
+    - Degree: break ties by choosing the cell that constrains the most other empty cells.
+    """
+    min_domain_size = 10
+    candidates = []
+
+    # Step 1: Find all empty cells and track those with the smallest domain size
+    for r in range(9):
+        for c in range(9):
+            if board[r][c] == 0:
+                domain_size = sum(domainStore[r][c])
+                if domain_size < min_domain_size:
+                    min_domain_size = domain_size
+                    candidates = [(r, c)]
+                elif domain_size == min_domain_size:
+                    candidates.append((r, c))
+
+    # If no empty cells, board is filled
+    if not candidates:
+        return None
+
+    # Step 2: If tie, apply degree heuristic — pick cell with most constraints
+    best_cell = None
+    max_degree = -1
+    for (r, c) in candidates:
+        row_empty = sum(board[r][cc] == 0 for cc in range(9)) - 1
+        col_empty = sum(board[rr][c] == 0 for rr in range(9)) - 1
+        sr, sc = (r // 3) * 3, (c // 3) * 3
+        grid_empty = np.sum(np.array(board)[sr:sr+3, sc:sc+3] == 0) - 1
+        degree = row_empty + col_empty + grid_empty
+        if degree > max_degree:
+            max_degree = degree
+            best_cell = (r, c)
+
+    return best_cell
 
 def isSolved(board):
     # Check rows
@@ -51,12 +87,13 @@ def isSolved(board):
 
 
 class SudokuBoard:
-    def __init__(self, path):
-        self.path = path
-        self.boardDF = pd.read_csv(path, header=None)
-        self.board = self.boardDF.fillna(0).astype(int).values.tolist()
+    def __init__(self, board_string):
+        self.board_string = board_string
+        flat_array = np.array([int(char) for char in board_string])
+        self.board = flat_array.reshape(9, 9).tolist()
         self.domainStore = [[[1 for _ in range(9)] for _ in range(9)] for _ in range(9)]
         self.initializeDomains()
+        self.recursiveCalls = 0
 
         ckpt_path = "C:\\Users\\samgr\\PycharmProjects\\sudoku-cp-ai\\solver\\row_ckpt.ckpt"
         self.model = SudokuLightning.load_from_checkpoint(ckpt_path)
@@ -203,7 +240,8 @@ class SudokuBoard:
 
         return board, domainStore
 
-    def search(self, board=None, domainStore=None, branch_sizes=None, depth=0, parent=None):
+    def search(self, method, board=None, domainStore=None, branch_sizes=None, depth=0, parent=None):
+
         if branch_sizes is None:
             branch_sizes = []
         if board is None:
@@ -218,13 +256,18 @@ class SudokuBoard:
             else:
                 return None, branch_sizes
 
-        nr, nc = self.predict(board)
+        import time
 
-        nr, nc = find_first_empty(board)
+        if method == "cnn":
+            nr, nc = self.predict(board)
+        elif method == "hybrid":
 
+            nr, nc = hybrid_mrv(board, domainStore)
+        else:
+            nr, nc = naive_search(board, domainStore)
 
         if board[nr][nc] != 0:
-            nr, nc = find_first_empty(board)
+            nr, nc = hybrid_mrv(board, domainStore)
 
         cell_domain = domainStore[nr][nc]
         possible_values = get_possible_vals_from_domain(cell_domain)
@@ -232,13 +275,14 @@ class SudokuBoard:
         branch_sizes.append((depth, len(possible_values)))
 
         for val in possible_values:
+
             node_label = f"({nr},{nc})={val}"
 
             new_board, new_domain = self.apply_assignment_and_propagate(board, domainStore, nr, nc, val)
             if new_board is None:
                 continue
-
-            result, branch_sizes = self.search(new_board, new_domain, branch_sizes, depth + 1, node_label)
+            self.recursiveCalls += 1
+            result, branch_sizes = self.search(method, new_board, new_domain, branch_sizes, depth + 1, node_label)
             if result is not None:
                 return result, branch_sizes
 
@@ -270,3 +314,6 @@ class SudokuBoard:
         for r in range(9):
             row_vals = " ".join(str(self.board[r][c]) for c in range(9))
             print(f"R{r}  {row_vals}")
+
+    def callCount(self):
+        return self.recursiveCalls
