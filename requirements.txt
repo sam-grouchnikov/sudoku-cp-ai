@@ -3,3 +3,4 @@ lightning
 numpy
 wandb
 pandas
+matplotlib
