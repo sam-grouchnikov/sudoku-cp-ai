@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 
 from solver.SudokuBoardSolver import SudokuBoard
 
-# sudoku_file = "C:\\Users\\samgr\\PycharmProjects\\sudoku-cp-ai\\sudoku-3m.csv"
-sudoku_file = "/home/sam/sudoku/sudoku-3m.csv"
-df = pd.read_csv(sudoku_file, nrows=2000)
+sudoku_file = "C:\\Users\\samgr\\PycharmProjects\\sudoku-cp-ai\\sudoku-3m.csv"
+# sudoku_file = "/home/sam/sudoku/sudoku-3m.csv"
+df = pd.read_csv(sudoku_file, nrows=1000)
 boards = df.iloc[:, 1].astype(str).tolist()
 
 board_sorted = [[] for _ in range(81)]
@@ -68,25 +68,25 @@ print("Naive done")
 times_cnn = [0 for _ in range(81)]
 branches_cnn = [0 for _ in range(81)]
 
-for index, boardSet in enumerate(board_sorted):
-    if len(boardSet) == 0:
-        continue
-    total_solver_timed = 0
-    total_solver_branches = 0
-    for board in boardSet:
-        sdb = SudokuBoard(board)
-        start = time.time()
-        sol, branches = sdb.search("cnn")
-        end = time.time()
-        total_time = end - start
-        total_solver_timed += total_time
-        total_solver_branches += sdb.callCount()
-
-    print("Finished index ", index)
-    times_cnn[index] = total_solver_timed / len(boardSet)
-    branches_cnn[index] = total_solver_branches / len(boardSet)
-
-print("CNN done")
+# for index, boardSet in enumerate(board_sorted):
+#     if len(boardSet) == 0:
+#         continue
+#     total_solver_timed = 0
+#     total_solver_branches = 0
+#     for board in boardSet:
+#         sdb = SudokuBoard(board)
+#         start = time.time()
+#         sol, branches = sdb.search("cnn")
+#         end = time.time()
+#         total_time = end - start
+#         total_solver_timed += total_time
+#         total_solver_branches += sdb.callCount()
+#
+#     print("Finished index ", index)
+#     times_cnn[index] = total_solver_timed / len(boardSet)
+#     branches_cnn[index] = total_solver_branches / len(boardSet)
+#
+# print("CNN done")
 
 
 

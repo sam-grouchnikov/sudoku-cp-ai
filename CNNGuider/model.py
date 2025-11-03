@@ -6,17 +6,22 @@ import lightning as L
 class SudokuCNN(nn.Module):
     def __init__(self):
         super().__init__()
-        self.conv1 = nn.Conv2d(in_channels=1, out_channels=128, kernel_size=3, padding=1)
+        self.conv1 = nn.Conv2d(in_channels=21, out_channels=128, kernel_size=3, padding=1)
         self.conv2 = nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, padding=1)
-        self.conv_out = nn.Conv2d(in_channels=128, out_channels=1, kernel_size=1)
+        self.conv_out = nn.Conv2d(in_channels=128, out_channels=64, kernel_size=1)
 
-        self.fc1 = nn.Linear(9 * 9, 512)
+        self.fc1 = nn.Linear(64 * 9 * 9, 512)
         self.fc2 = nn.Linear(512, 512)
         self.fc3 = nn.Linear(512, 9 * 9)
 
+        self.bn1 = nn.BatchNorm2d(128)
+        self.bn2 = nn.BatchNorm2d(128)
+
     def forward(self, x):
-        x = F.relu(self.conv1(x))
-        x = F.relu(self.conv2(x))
+        x = F.relu(self.bn1(self.conv1(x)))
+        x = F.dropout(x, p=0.2, training=self.training)
+        x = F.relu(self.bn2(self.conv2(x)))
+        x = F.dropout(x, p=0.2, training=self.training)
         x = self.conv_out(x)
         x = x.view(x.size(0), -1)
 
@@ -37,8 +42,8 @@ class SudokuLightning(L.LightningModule):
         return self.model(x)
 
     def training_step(self, batch, batch_idx):
-        x, y = batch  # x: (B,1,9,9), y: scalar 0..80
-        logits = self(x).view(x.size(0), -1)  # flatten to (B, 81)
+        x, y = batch
+        logits = self(x).view(x.size(0), -1)
         loss = F.cross_entropy(logits, y)
 
         preds = logits.argmax(dim=1)
