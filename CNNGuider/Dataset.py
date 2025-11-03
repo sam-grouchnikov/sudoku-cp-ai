@@ -18,7 +18,7 @@ class SudokuDataset(Dataset):
         row = self.data.iloc[idx]
 
         board_str = row["board"]
-        target_idx = int(row["target"])
+        target_idx = int(row["label"])
         sb = SudokuBoard(board_str)
         domainStore = sb.getDomainStore()
 

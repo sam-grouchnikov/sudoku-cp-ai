@@ -71,23 +71,21 @@ def choose_next_cell_mrv_hybrid(board):
 
 
 labels = []
-comma_boards = []
+boards_str = []
+
 for board in boards:
     label = choose_next_cell_mrv_hybrid(board)
     labels.append(label)
-    comma_board = ",".join(list(board.strip()))
-    comma_boards.append(comma_board)
+    # remove whitespace and keep the board as a single 81-character string
+    boards_str.append(board.strip())
 
-out_df = pd.DataFrame(
-    {
-        "board": comma_boards,
-        "label": labels,
-    }
-)
+# make DataFrame with only 2 columns
+out_df = pd.DataFrame({
+    "board": boards_str,
+    "label": labels,
+})
 
 with open("row_data.csv", "w") as f:
-    f.write("board,label\n")  # header
+    f.write("board,label\n")
     for b, l in zip(boards, labels):
-        # insert commas between every character in the board
-        board_str = ",".join(b)
-        f.write(f"{board_str},{l}\n")
+        f.write(f"{b},{l}\n")
