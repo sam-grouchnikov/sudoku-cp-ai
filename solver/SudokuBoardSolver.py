@@ -98,18 +98,18 @@ class SudokuBoard:
 
         # ckpt_path = "C:\\Users\\samgr\\PycharmProjects\\sudoku-cp-ai\\solver\\row_ckpt.ckpt"
         ckpt_path = "/home/sam/sudoku/sudoku-cp-ai/row_ckpt.ckpt"
-        self.model = SudokuLightning.load_from_checkpoint(ckpt_path).to(self.device)
+        # self.model = SudokuLightning.load_from_checkpoint(ckpt_path).to(self.device)
 
-    def predict(self, board):
-        self.model.eval()
-        board_array = torch.tensor(board, dtype=torch.float32, device = self.device).view(1, 1, 9, 9)
-
-        with torch.no_grad():
-            logits = self.model(board_array)
-            preds = logits.view(-1).argmax()
-
-        row, col = divmod(preds.item(), 9)
-        return [row, col]
+    # def predict(self, board):
+    #     self.model.eval()
+    #     board_array = torch.tensor(board, dtype=torch.float32, device = self.device).view(1, 1, 9, 9)
+    #
+    #     with torch.no_grad():
+    #         logits = self.model(board_array)
+    #         preds = logits.view(-1).argmax()
+    #
+    #     row, col = divmod(preds.item(), 9)
+    #     return [row, col]
 
     def getValue(self, r, c):
         return self.board[r][c]
@@ -270,7 +270,8 @@ class SudokuBoard:
         import time
 
         if method == "cnn":
-            nr, nc = self.predict(board)
+            # nr, nc = self.predict(board)
+            nr, nc = 0, 0
         elif method == "hybrid":
 
             nr, nc = hybrid_mrv(board, domainStore)
