@@ -4,7 +4,7 @@ import pandas as pd
 from solver.SudokuBoardSolver import SudokuBoard
 
 # sudoku_file = "C:\\Users\\samgr\\PycharmProjects\\sudoku-cp-ai\\sudoku.csv"
-sudoku_file = "/home/sam/sudoku/sudoku.csv"
+sudoku_file = "/home/sam/sudoku/labeled_sudoku.csv"
 df = pd.read_csv(sudoku_file, nrows=20000)
 boards = df.iloc[:, 0].astype(str).tolist()
 
