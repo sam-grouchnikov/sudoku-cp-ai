@@ -111,6 +111,12 @@ class SudokuBoard:
         row, col = divmod(preds.item(), 9)
         return [row, col]
 
+    def getValue(self, r, c):
+        return self.board[r][c]
+
+    def getBoard(self):
+        return self.board
+
     def initializeDomains(self):
         for r in range(9):
             for c in range(9):
