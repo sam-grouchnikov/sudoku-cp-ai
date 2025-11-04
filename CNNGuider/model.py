@@ -13,7 +13,7 @@ class SudokuCNN(nn.Module):
 
         self.fc1 = nn.Linear(64 * 9 * 9, 512)
         self.fc2 = nn.Linear(512, 512)
-        self.fc3 = nn.Linear(512, 512)
+        # self.fc3 = nn.Linear(512, 512)
         self.fc4 = nn.Linear(512, 9 * 9)
 
         self.bn1 = nn.BatchNorm2d(128)
