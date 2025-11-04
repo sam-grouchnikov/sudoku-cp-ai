@@ -11,8 +11,8 @@ from CNNGuider.model import SudokuLightning
 
 
 def main():
-    batch = 256
-    epochs = 2
+    batch = 128
+    epochs = 5
 
     devices = torch.cuda.device_count()
     pl.seed_everything(42)
@@ -53,7 +53,7 @@ def main():
 
 
     trainer.test(model, dataloaders=test_loader)
-    trainer.save_checkpoint("row_ckpt.ckpt")
+    trainer.save_checkpoint("row_ckpt_large.ckpt")
 
 
 if __name__ == "__main__":
