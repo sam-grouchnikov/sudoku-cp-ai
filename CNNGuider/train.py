@@ -12,7 +12,7 @@ from CNNGuider.model import SudokuLightning
 
 def main():
     batch = 128
-    epochs = 7
+    epochs = 1
 
     devices = torch.cuda.device_count()
     pl.seed_everything(42)
