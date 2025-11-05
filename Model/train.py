@@ -6,8 +6,8 @@ from lightning.pytorch.loggers import WandbLogger
 from lightning.pytorch.callbacks import ModelCheckpoint, EarlyStopping
 
 
-from CNNGuider.Dataset import SudokuDataset
-from CNNGuider.model import SudokuLightning
+from Model.Dataset import SudokuDataset
+from Model.model_cnn import SudokuLightningCNN
 
 
 def main():
@@ -31,7 +31,7 @@ def main():
     val_loader = DataLoader(val_dataset, batch_size=batch, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=batch, shuffle=True)
 
-    model = SudokuLightning(wandb_logger)
+    model = SudokuLightningCNN(wandb_logger)
 
 
 
