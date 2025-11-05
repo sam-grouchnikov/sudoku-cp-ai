@@ -4,7 +4,6 @@ from torch.utils.data import DataLoader, random_split
 import torch
 from lightning.pytorch.loggers import WandbLogger
 from lightning.pytorch.callbacks import ModelCheckpoint, EarlyStopping
-from lightning.pytorch.callbacks import TQDMProgressBar
 
 
 from Model.Dataset import SudokuDataset
@@ -37,7 +36,6 @@ def main():
 
 
     trainer = pl.Trainer(
-        callbacks = [TQDMProgressBar],
         max_epochs=epochs,
         accelerator="gpu",
         devices=devices,
