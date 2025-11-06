@@ -53,7 +53,7 @@ def main():
 
 
     trainer.test(model, dataloaders=test_loader)
-    trainer.save_checkpoint("row_ckpt_large.ckpt")
+    trainer.save_checkpoint("cnn_16out_3.7m.ckpt")
 
 
 if __name__ == "__main__":
