@@ -41,8 +41,7 @@ def main():
         devices=devices,
         precision="16",
         strategy=DDPStrategy(find_unused_parameters=True),
-        val_check_interval=0.2,
-        log_every_n_steps=1,
+        log_every_n_steps=100,
         logger=wandb_logger,
 
     )
