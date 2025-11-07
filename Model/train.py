@@ -8,6 +8,7 @@ from lightning.pytorch.callbacks import ModelCheckpoint, EarlyStopping
 
 from Model.Dataset import SudokuDataset
 from Model.model_cnn import SudokuLightningCNN
+from Model.model_normal import SudokuLightningFC
 
 
 def main():
@@ -16,7 +17,7 @@ def main():
 
     devices = torch.cuda.device_count()
     pl.seed_everything(42)
-    wandb_logger = WandbLogger(project="sudoku-testing", name="row_data")
+    wandb_logger = WandbLogger(project="sudoku-testing", name="fc 1024")
 
 
     dataset = SudokuDataset("/home/sam/sudoku/row_data.csv")
@@ -31,7 +32,7 @@ def main():
     val_loader = DataLoader(val_dataset, batch_size=batch, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=batch, shuffle=True)
 
-    model = SudokuLightningCNN(wandb_logger)
+    model = SudokuLightningFC(wandb_logger)
 
 
 
@@ -52,7 +53,7 @@ def main():
 
 
     trainer.test(model, dataloaders=test_loader)
-    trainer.save_checkpoint("cnn_16out_3.7m.ckpt")
+    trainer.save_checkpoint("fc1024.ckpt")
 
 
 if __name__ == "__main__":
