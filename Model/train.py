@@ -32,7 +32,7 @@ def main():
     val_loader = DataLoader(val_dataset, batch_size=batch, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=batch, shuffle=True)
 
-    model = SudokuLightningFC(wandb_logger)
+    model = SudokuLightningCNN(wandb_logger)
 
 
 
