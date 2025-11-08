@@ -6,15 +6,15 @@ import lightning as L
 class SudokuCNN(nn.Module):
     def __init__(self):
         super().__init__()
-        self.conv1 = nn.Conv2d(in_channels=30, out_channels=128, kernel_size=3, padding=1)
-        self.conv2 = nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, padding=1)
-        self.conv3 = nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, padding=1)
-        self.conv_out = nn.Conv2d(in_channels=128, out_channels=16, kernel_size=1)
+        self.conv1 = nn.Conv2d(in_channels=30, out_channels=64, kernel_size=3, padding=1)
+        self.conv2 = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, padding=1)
+        self.conv3 = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, padding=1)
+        self.conv_out = nn.Conv2d(in_channels=64, out_channels=8, kernel_size=1)
 
-        self.fc1 = nn.Linear(16 * 9 * 9, 512)
-        self.fc2 = nn.Linear(512, 512)
-        self.fc3 = nn.Linear(512, 512)
-        self.fc4 = nn.Linear(512, 9 * 9)
+        self.fc1 = nn.Linear(8 * 9 * 9, 256)
+        self.fc2 = nn.Linear(256, 256)
+        self.fc3 = nn.Linear(256, 256)
+        self.fc4 = nn.Linear(256, 9 * 9)
 
         self.bn1 = nn.BatchNorm2d(128)
         self.bn2 = nn.BatchNorm2d(128)
