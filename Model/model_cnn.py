@@ -16,9 +16,9 @@ class SudokuCNN(nn.Module):
         self.fc3 = nn.Linear(256, 256)
         self.fc4 = nn.Linear(256, 9 * 9)
 
-        self.bn1 = nn.BatchNorm2d(128)
-        self.bn2 = nn.BatchNorm2d(128)
-        self.bn3 = nn.BatchNorm2d(128)
+        self.bn1 = nn.BatchNorm2d(64)
+        self.bn2 = nn.BatchNorm2d(64)
+        self.bn3 = nn.BatchNorm2d(64)
 
     def forward(self, x):
         x = F.relu(self.bn1(self.conv1(x)))
