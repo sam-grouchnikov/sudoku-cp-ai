@@ -13,7 +13,7 @@ from Model.model_normal import SudokuLightningFC
 
 def main():
     batch = 256
-    epochs = 8
+    epochs = 12
 
     devices = torch.cuda.device_count()
     pl.seed_everything(42)
@@ -53,7 +53,7 @@ def main():
 
 
     trainer.test(model, dataloaders=test_loader)
-    trainer.save_checkpoint("fc1024.ckpt")
+    trainer.save_checkpoint("latest.ckpt")
 
 
 if __name__ == "__main__":
