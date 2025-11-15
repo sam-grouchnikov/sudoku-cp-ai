@@ -12,8 +12,8 @@ from Model.model_normal import SudokuLightningFC
 
 
 def main():
-    batch = 256
-    epochs = 12
+    batch = 1028
+    epochs = 15
 
     devices = torch.cuda.device_count()
     pl.seed_everything(42)
