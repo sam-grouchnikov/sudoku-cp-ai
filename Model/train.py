@@ -12,7 +12,7 @@ from Model.model_normal import SudokuLightningFC
 
 
 def main():
-    batch = 1028
+    batch = 128
     epochs = 15
 
     devices = torch.cuda.device_count()
