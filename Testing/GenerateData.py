@@ -5,10 +5,10 @@ import matplotlib.pyplot as plt
 
 from solver.SudokuBoardSolver import SudokuBoard
 
-sudoku_file = "C:\\Users\\samgr\\PycharmProjects\\sudoku-cp-ai\\sudoku-3m.csv"
-# sudoku_file = "/home/sam/sudoku/sudoku-3m.csv"
-df = pd.read_csv(sudoku_file, nrows=2000)
-boards = df.iloc[:, 1].astype(str).tolist()
+# sudoku_file = "C:\\Users\\samgr\\PycharmProjects\\sudoku-cp-ai\\sudoku.csv"
+sudoku_file = "/home/sam/sudoku/sudoku.csv"
+df = pd.read_csv(sudoku_file, nrows=10000)
+boards = df.iloc[:, 0].astype(str).tolist()
 
 board_sorted = [[] for _ in range(81)]
 

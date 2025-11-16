@@ -53,8 +53,8 @@ class SudokuBoard:
         self.initializeDomains()
         self.recursiveCalls = 0
 
-        ckpt_path = "C:\\Users\\samgr\PycharmProjects\\sudoku-cp-ai\\ckpts\\" + ckpt_name + ".ckpt"
-        # ckpt_path = "/home/sam/sudoku/sudoku-cp-ai/row_ckpt.ckpt"
+        # ckpt_path = "C:\\Users\\samgr\PycharmProjects\\sudoku-cp-ai\\ckpts\\" + ckpt_name + ".ckpt"
+        ckpt_path = "/home/sam/sudoku/cnn_8out_400k.ckpt"
         self.model = SudokuLightningCNN.load_from_checkpoint(ckpt_path).to(self.device)
 
     def predict(self, board, ds):
