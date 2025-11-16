@@ -13,11 +13,11 @@ from Model.model_normal import SudokuLightningFC
 
 def main():
     batch = 128
-    epochs = 15
+    epochs = 7
 
     devices = torch.cuda.device_count()
     pl.seed_everything(42)
-    wandb_logger = WandbLogger(project="sudoku-testing", name="fc 1024")
+    wandb_logger = WandbLogger(project="sudoku-cnn-comps", name="cnn-8")
 
 
     dataset = SudokuDataset("/home/sam/sudoku/row_data.csv")
