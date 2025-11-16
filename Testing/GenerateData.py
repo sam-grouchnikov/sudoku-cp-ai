@@ -24,6 +24,31 @@ branches_hybrid = [0 for _ in range(81)]
 
 global_board = 0
 
+times_cnn = [0 for _ in range(81)]
+branches_cnn = [0 for _ in range(81)]
+
+for index, boardSet in enumerate(board_sorted):
+    if len(boardSet) == 0:
+        continue
+    total_solver_timed = 0
+    total_solver_branches = 0
+    for board in boardSet:
+        sdb = SudokuBoard(board, "cnn_8out_400k")
+        start = time.time()
+        sol, branches = sdb.search("cnn")
+        end = time.time()
+        total_time = end - start
+        total_solver_timed += total_time
+        total_solver_branches += sdb.callCount()
+        global_board += 1
+        print("Board: ", global_board)
+
+    print("Finished index ", index)
+    times_cnn[index] = total_solver_timed / len(boardSet)
+    branches_cnn[index] = total_solver_branches / len(boardSet)
+
+print("CNN done")
+
 for index, boardSet in enumerate(board_sorted):
     if len(boardSet) == 0:
         continue
@@ -62,6 +87,8 @@ for index, boardSet in enumerate(board_sorted):
         total_time = end - start
         total_solver_timed += total_time
         total_solver_branches += sdb.callCount()
+        global_board += 1
+        print("Board: ", global_board)
 
     print("Finished index ", index)
     times_naive[index] = total_solver_timed / len(boardSet)
@@ -69,30 +96,7 @@ for index, boardSet in enumerate(board_sorted):
 
 print("Naive done")
 
-times_cnn = [0 for _ in range(81)]
-branches_cnn = [0 for _ in range(81)]
 
-for index, boardSet in enumerate(board_sorted):
-    if len(boardSet) == 0:
-        continue
-    total_solver_timed = 0
-    total_solver_branches = 0
-    for board in boardSet:
-        sdb = SudokuBoard(board, "cnn_8out_400k")
-        start = time.time()
-        sol, branches = sdb.search("cnn")
-        end = time.time()
-        total_time = end - start
-        total_solver_timed += total_time
-        total_solver_branches += sdb.callCount()
-        global_board += 1
-        print("Board: ", global_board)
-
-    print("Finished index ", index)
-    times_cnn[index] = total_solver_timed / len(boardSet)
-    branches_cnn[index] = total_solver_branches / len(boardSet)
-
-print("CNN done")
 
 
 print("CNN:", times_cnn)

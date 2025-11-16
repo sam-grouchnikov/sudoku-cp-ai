@@ -60,7 +60,7 @@ class SudokuBoard:
     def predict(self, board, ds):
         self.model.eval()
         features_array = preprocess(board, ds)
-        features_array = features_array.unsqueeze(0)
+        features_array = features_array.unsqueeze(0).to(self.device)
 
         with torch.no_grad():
             logits = self.model(features_array)
