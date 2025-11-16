@@ -6,59 +6,13 @@ import random
 
 from Model.model_cnn import SudokuLightningCNN
 from PreprocessData import preprocess
+from solver.heuristics import hybrid_mrv, naive_search
 
 
 def get_possible_vals_from_domain(domain_vec):
     return [i + 1 for i, v in enumerate(domain_vec) if v == 1]
 
-def naive_search(board, domainStore):
-    empty_cells = [(r, c) for r in range(9) for c in range(9) if board[r][c] == 0]
-    if not empty_cells:
-        return None
-    return random.choice(empty_cells)
 
-def hybrid_mrv(board, domainStore):
-    """
-    Hybrid MRV + Degree heuristic:
-    - MRV: choose the empty cell with the smallest remaining domain.
-    - Degree: break ties by choosing the cell that constrains the most other empty cells.
-    """
-    min_domain_size = 10
-    candidates = []
-
-    for r in range(9):
-        for c in range(9):
-            if board[r][c] == 0:
-                domain_size = sum(domainStore[r][c])
-                if domain_size < min_domain_size:
-                    min_domain_size = domain_size
-                    candidates = [(r, c)]
-                elif domain_size == min_domain_size:
-                    candidates.append((r, c))
-
-    if not candidates:
-        return None
-
-    best_cell = None
-    max_degree = -1
-    for (r, c) in candidates:
-        degree = 0
-
-        degree += sum(1 for cc in range(9) if board[r][cc] == 0 and cc != c)
-        degree += sum(1 for rr in range(9) if board[rr][c] == 0 and rr != r)
-        sr, sc = 3 * (r // 3), 3 * (c // 3)
-        degree += sum(
-            1
-            for rr in range(sr, sr + 3)
-            for cc in range(sc, sc + 3)
-            if board[rr][cc] == 0 and (rr, cc) != (r, c)
-        )
-
-        if degree > max_degree:
-            max_degree = degree
-            best_cell = (r, c)
-
-    return best_cell
 
 def isSolved(board):
     # Check rows
@@ -90,7 +44,7 @@ def isSolved(board):
 
 
 class SudokuBoard:
-    def __init__(self, board_string):
+    def __init__(self, board_string, ckpt_name):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.board_string = board_string
         flat_array = np.array([int(char) for char in board_string])
@@ -99,7 +53,7 @@ class SudokuBoard:
         self.initializeDomains()
         self.recursiveCalls = 0
 
-        ckpt_path = "C:\\Users\\samgr\\PycharmProjects\\sudoku-cp-ai\\solver\\row_ckpt_large.ckpt"
+        ckpt_path = "C:\\Users\\samgr\PycharmProjects\\sudoku-cp-ai\\ckpts\\" + ckpt_name + ".ckpt"
         # ckpt_path = "/home/sam/sudoku/sudoku-cp-ai/row_ckpt.ckpt"
         self.model = SudokuLightningCNN.load_from_checkpoint(ckpt_path).to(self.device)
 
@@ -305,7 +259,7 @@ class SudokuBoard:
         elif method == "hybrid":
             nr, nc = hybrid_mrv(board, domainStore)
         else:
-            nr, nc = naive_search(board, domainStore)
+            nr, nc = naive_search(board)
 
         if board[nr][nc] != 0:
             nr, nc = hybrid_mrv(board, domainStore)
