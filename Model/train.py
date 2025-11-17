@@ -13,7 +13,7 @@ from Model.model_normal import SudokuLightningFC
 
 def main():
     batch = 128
-    epochs = 7
+    epochs = 10
 
     devices = torch.cuda.device_count()
     pl.seed_everything(42)
@@ -29,8 +29,8 @@ def main():
     train_dataset, val_dataset, test_dataset = random_split(dataset, [train_size, val_size, test_size])
 
     train_loader = DataLoader(train_dataset, batch_size=batch, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=batch, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=batch, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=1028, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=1028)
 
     model = SudokuLightningCNN(wandb_logger)
 
