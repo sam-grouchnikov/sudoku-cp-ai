@@ -21,7 +21,10 @@ class SudokuDataset(Dataset):
         target_idx = int(row["label"])
         domainStore = getDomainStore(board_str)
 
-        x = preprocess(board_str, domainStore)
+        # x = preprocess(board_str, domainStore)
+        board = np.array(list(map(int, board_str)), dtype=np.float32).reshape(9, 9)
+        x = torch.tensor(board, dtype=torch.float32)
+
         y = torch.tensor(target_idx, dtype=torch.long)
 
         return x, y
