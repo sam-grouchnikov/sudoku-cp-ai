@@ -23,7 +23,7 @@ class SudokuDataset(Dataset):
 
         # x = preprocess(board_str, domainStore)
         board = np.array(list(map(int, board_str)), dtype=np.float32).reshape(9, 9)
-        x = torch.tensor(board, dtype=torch.float32)
+        x = torch.tensor(board, dtype=torch.float32).unsqueeze(0)
 
         y = torch.tensor(target_idx, dtype=torch.long)
 
