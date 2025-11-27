@@ -7,10 +7,10 @@ class SudokuFC(nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.fc1 = nn.Linear(81, 512)
-        self.fc2 = nn.Linear(512, 512)
-        self.fc3 = nn.Linear(512, 512)
-        self.fc4 = nn.Linear(512, 9 * 9)
+        self.fc1 = nn.Linear(81, 1024)
+        self.fc2 = nn.Linear(1024, 1024)
+        self.fc3 = nn.Linear(1024, 1024)
+        self.fc4 = nn.Linear(1024, 9 * 9)
 
     def forward(self, x):
         x = x.view(x.size(0), -1)
