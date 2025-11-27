@@ -4,7 +4,7 @@ import torch
 import numpy as np
 
 # from PreprocessData import preprocess, getDomainStore
-from solver.SudokuBoardSolver import SudokuBoard
+# from solver.SudokuBoardSolver import SudokuBoard
 
 
 class SudokuDataset(Dataset):
