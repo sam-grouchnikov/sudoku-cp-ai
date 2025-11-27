@@ -9,9 +9,9 @@ class SudokuCNN(nn.Module):
         self.conv1 = nn.Conv2d(in_channels=1, out_channels=64, kernel_size=3, padding=1)
         self.conv2 = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, padding=1)
         self.conv3 = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, padding=1)
-        self.conv_out = nn.Conv2d(in_channels=64, out_channels=1, kernel_size=1)
+        self.conv_out = nn.Conv2d(in_channels=64, out_channels=2, kernel_size=1)
 
-        self.fc1 = nn.Linear(1 * 9 * 9, 256)
+        self.fc1 = nn.Linear(2 * 9 * 9, 256)
         self.fc2 = nn.Linear(256, 256)
         self.fc3 = nn.Linear(256, 256)
         self.fc4 = nn.Linear(256, 9 * 9)
