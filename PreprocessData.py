@@ -24,10 +24,10 @@ import pandas as pd
 # # Save
 # out.to_csv("sudoku_boards_sorted.csv", index=False)
 
-df = pd.read_csv("sudoku_boards_sorted.csv")
-
-# Group by zero_count
-groups = df.groupby("zero_count")
+# df = pd.read_csv("sudoku_boards_sorted.csv")
+#
+# # Group by zero_count
+# groups = df.groupby("zero_count")
 
 
 # rows = []
