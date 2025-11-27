@@ -17,7 +17,7 @@ def main():
 
     devices = torch.cuda.device_count()
     pl.seed_everything(42)
-    wandb_logger = WandbLogger(project="sudoku-cnn-comps", name="cnn-8")
+    wandb_logger = WandbLogger(project="sudoku-featureless", name="cnn-1")
 
 
     dataset = SudokuDataset("/home/sam/sudoku/row_data.csv")
