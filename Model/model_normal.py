@@ -7,7 +7,7 @@ class SudokuFC(nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.fc1 = nn.Linear(81, 1024)
+        self.fc1 = nn.Linear(2430, 1024)
         self.fc2 = nn.Linear(1024, 1024)
         self.fc3 = nn.Linear(1024, 1024)
         self.fc4 = nn.Linear(1024, 9 * 9)

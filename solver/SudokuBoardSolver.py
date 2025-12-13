@@ -5,6 +5,7 @@ import random
 
 
 from Model.model_cnn import SudokuLightningCNN
+from Model.model_normal import SudokuLightningFC
 from PreprocessData import preprocess
 from solver.heuristics import hybrid_mrv, naive_search
 
@@ -53,9 +54,15 @@ class SudokuBoard:
         self.initializeDomains()
         self.recursiveCalls = 0
 
-        # ckpt_path = "C:\\Users\\samgr\PycharmProjects\\sudoku-cp-ai\\ckpts\\" + ckpt_name + ".ckpt"
-        ckpt_path = "/home/sam/sudoku/cnn_8out_400k.ckpt"
-        self.model = SudokuLightningCNN.load_from_checkpoint(ckpt_path).to(self.device)
+        ckpt_path = f"C:/Users/samgr/PycharmProjects/sudoku-cp-ai/ckpts_new/{ckpt_name}.ckpt"
+
+        # ckpt_path = "/home/sam/sudoku/cnn_8out_400k.ckpt"
+        if ckpt_name is not None and ckpt_name.startswith("fc"):
+            self.model = SudokuLightningFC.load_from_checkpoint(ckpt_path).to(self.device)
+        elif ckpt_name is not None and ckpt_name.startswith("cnn"):
+            self.model = SudokuLightningCNN.load_from_checkpoint(ckpt_path).to(self.device)
+        else:
+            self.model = None
 
     def predict(self, board, ds):
         self.model.eval()
