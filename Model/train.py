@@ -20,7 +20,7 @@ def main():
     wandb_logger = WandbLogger(project="sudoku-featureless", name="cnn-1")
 
 
-    dataset = SudokuDataset("/home/sam/sudoku/row_data.csv")
+    dataset = SudokuDataset("/home/sam/hybrid_mrv_data.csv")
 
     train_size = int(0.7 * len(dataset))
     val_size = int(0.1 * len(dataset))
