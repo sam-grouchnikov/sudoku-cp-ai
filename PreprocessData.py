@@ -42,10 +42,6 @@ for zero_count, group in groups:
 # Combine all collected rows
 sampled = pd.concat(rows, ignore_index=True)
 
-# Save to a new file
-sampled.to_csv("C:\\Users\\samgr\\PycharmProjects\\sudoku-cp-ai\\sudoku_board_samples-3m.csv", index=False, header=False)
-#
-#
 def preprocess(board_str, domainStore=None):
     board = np.array(list(map(int, board_str)), dtype=np.float32).reshape(9, 9)
     features = np.zeros((21, 9, 9), dtype=np.float32)
