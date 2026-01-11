@@ -2,46 +2,6 @@ import numpy as np
 import torch
 import pandas as pd
 
-
-df = pd.read_csv("C:\\Users\\samgr\\PycharmProjects\\sudoku-cp-ai\\sudoku-3m.csv")
-
-# Extract the column with board strings
-boards = df.iloc[:, 1]
-
-# Count zeros in each board
-zero_counts = boards.apply(lambda s: s.count("."))
-
-# Build new dataframe
-out = pd.DataFrame({
-    "board": boards,
-    "zero_count": zero_counts
-})
-
-# Sort ascending by #zeros
-out = out.sort_values("zero_count").reset_index(drop=True)
-
-# Save
-out.to_csv("sudoku_boards_sorted-3m.csv", index=False)
-
-df = pd.read_csv("sudoku_boards_sorted-3m.csv")
-
-# Group by zero_count
-groups = df.groupby("zero_count")
-
-
-rows = []
-
-for zero_count, group in groups:
-    if len(group) <= 100:
-        # Take all examples
-        rows.append(group)
-    else:
-        # Take the first 200
-        rows.append(group.iloc[:100])
-
-# Combine all collected rows
-sampled = pd.concat(rows, ignore_index=True)
-
 def preprocess(board_str, domainStore=None):
     board = np.array(list(map(int, board_str)), dtype=np.float32).reshape(9, 9)
     features = np.zeros((21, 9, 9), dtype=np.float32)
