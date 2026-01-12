@@ -44,6 +44,7 @@ def main():
         strategy=DDPStrategy(find_unused_parameters=True),
         log_every_n_steps=100,
         logger=wandb_logger,
+        val_check_interval=0.25,
 
     )
 
